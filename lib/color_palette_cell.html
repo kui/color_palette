@@ -1,0 +1,46 @@
+<polymer-element name="color-palette-cell" attributes="color selected">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        text-align: center;
+        width: 32px;
+        height: 32px;
+      }
+      .cell-border {
+        display: block;
+        box-sizing: border-box;
+        border: 1px solid rgba(128, 128, 128, 0.2);
+        border-radius: 4px;
+        padding: 3px;
+        width: 100%;
+        height: 100%;
+      }
+      .cell-border:hover {
+        padding: 1px 5px 5px 1px;
+      }
+      .cell-border[selected] {
+        padding: 0px;
+        border: 1px solid rgba(0, 0, 0, 0.6);
+      }
+      .cell-body {
+        box-sizing: border-box;
+        padding: 3px;
+        border-radius: 3px;
+        width: 100%;
+        height: 100%;
+      }
+      .cell-border:hover > .cell-body {
+        box-shadow: 1px 1px 2px rgba(64,64,64,0.7);
+      }
+      .cell-border[selected]:hover > .cell-body {
+        box-shadow: none;
+      }
+    </style>
+    <div class="cell-border" title={{color}} selected?="{{selected}}">
+      <div class="cell-body" style="background-color: {{color}}">
+      </div>
+    </div>
+  </template>
+  <script type="application/dart" src="color_palette_cell.dart"></script>
+</polymer-element>
