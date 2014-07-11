@@ -1,6 +1,6 @@
-pubspec.lock
+/pubspec.lock
 packages
 *~
 .*
-!.gitignore
-build
+!/.gitignore
+/build
