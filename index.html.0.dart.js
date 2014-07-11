@@ -2043,13 +2043,13 @@ tQ:{
 "^":"a;M,J9,zO",
 t:function(a,b){if(!J.xC(b,0))H.vh(P.N(b))
 return this.zO},
-$isOd:true}}],["color_palette.example.demo_html_0","demo.html.0.dart",,Q,{
+$isOd:true}}],["color_palette.example.index_html_0","index.html.0.dart",,U,{
 "^":"",
 QL:[function(){var z,y
 A.Ok()
 z=document.querySelector("color-palette")
 y=document.querySelector("#color-display")
-J.aV(z).yI(new Q.em(y))},"$0","Im",0,0,13],
+J.aV(z).yI(new U.em(y))},"$0","Im",0,0,13],
 em:{
 "^":"Tp:46;a",
 $1:[function(a){J.Fc(this.a,a.gHw())
@@ -11006,7 +11006,7 @@ init.dispatchPropertyName=init.getIsolateTag("dispatch_record")
 return}if(document.currentScript){a(document.currentScript)
 return}var z=document.scripts
 function onLoad(b){for(var x=0;x<z.length;++x){z[x].removeEventListener("load",onLoad,false)}a(b.target)}for(var y=0;y<z.length;++y){z[y].addEventListener("load",onLoad,false)}})(function(a){init.currentScript=a
-if(typeof dartMainRunner==="function"){dartMainRunner(function(b){H.Rq(Q.Im(),b)},[])}else{(function(b){H.Rq(Q.Im(),b)})([])}})
+if(typeof dartMainRunner==="function"){dartMainRunner(function(b){H.Rq(U.Im(),b)},[])}else{(function(b){H.Rq(U.Im(),b)})([])}})
 function init(){I.p={}
 function generateAccessor(a,b,c){var y=a.split("-")
 var x=y[0]
