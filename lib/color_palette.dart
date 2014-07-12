@@ -61,16 +61,14 @@ class ColorPaletteElement extends PolymerElement {
       var target = event.element;
       if (!target.selected) return;
 
+      // find and de-select the old selected cell
       ColorPaletteCellElement oldSelectedCell;
       _selectedCells.where((e) => e != target).forEach((e){
         oldSelectedCell = e;
         e.selected = false;
       });
-      notifyPropertyChange(#selectedCell, oldSelectedCell, target);
 
-      String oldColor =
-          (oldSelectedCell == null) ? null : oldSelectedCell.color;
-      notifyPropertyChange(#color, oldColor, target.color);
+      notifyPropertyChange(#selectedCell, oldSelectedCell, target);
     });
   }
 
@@ -78,8 +76,12 @@ class ColorPaletteElement extends PolymerElement {
     changes.listen((records) {
       records
         .where((r) => (r is PropertyChangeRecord) && (r.name == #selectedCell))
-        .forEach((r) =>
-            _colorChangeController.add(new ColorChangeEvent(r.oldValue, r.newValue)));
+        .forEach((PropertyChangeRecord r) {
+          String oldColor = (r.oldValue == null) ? null : r.oldValue.color;
+          String newColor = (r.newValue == null) ? null : r.newValue.color;
+          notifyPropertyChange(#color, oldColor, newColor);
+          _colorChangeController.add(new ColorChangeEvent(r.oldValue, r.newValue));
+        });
     });
   }
 }
@@ -88,7 +90,7 @@ class ColorChangeEvent {
   ColorPaletteCellElement oldCell;
   ColorPaletteCellElement newCell;
   String get oldColor => (oldCell == null) ? null : oldCell.color;
-  String get newColor => newCell.color;
+  String get newColor => (newCell == null) ? null : newCell.color;
   ColorChangeEvent(this.oldCell, this.newCell);
   @override
   String toString() => 'ColorChangeEvent(${oldColor} => ${newColor})';
