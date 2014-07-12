@@ -14,28 +14,72 @@ class ColorPaletteElement extends PolymerElement {
 
   List<ColorPaletteCellElement> get cells =>
       querySelectorAll('color-palette-cell');
-  ColorPaletteCellElement get selectedCell =>
-      querySelector('color-palette-cell[selected]');
-  String get color => (selectedCell == null) ? null : selectedCell.color;
 
-  ColorPaletteElement.created() : super.created() {
-    _initCellEvents();
+  @reflectable
+  ColorPaletteCellElement get selectedCell =>
+      cells.firstWhere((ColorPaletteCellElement e) => e.selected);
+
+  @reflectable
+  String get color {
+    var c = selectedCell;
+    return (c == null) ? null : c.color;
   }
 
-  void _initCellEvents() {
-    cells.forEach((cell) {
-      onPropertyChange(cell, #selected, () {
-        if (!cell.selected) return;
+  List<ColorPaletteCellElement> get _selectedCells =>
+      cells.where((ColorPaletteCellElement e) => e.selected)
+        .toList(growable: false);
 
-        ColorPaletteCellElement oldCell = null;
-        cells.forEach((otherCell) {
-          if (otherCell == cell) return;
-          if (otherCell.selected) oldCell = otherCell;
-          otherCell.selected = false;
-        });
+  ColorPaletteElement.created() : super.created() {
+    _initInputElements();
+    _initCells();
+    _initEvents();
+  }
 
-        _colorChangeController.add(new ColorChangeEvent(oldCell, cell));
+  void _initInputElements() =>
+    querySelectorAll('input').forEach(_initInputElement);
+
+  void _initInputElement(InputElement e) {
+    var attrs = e.attributes;
+    if (!attrs.containsKey('type') || attrs['type'].isEmpty) e.type = 'radio';
+    if (e.type != 'radio') return;
+
+    e.style.display = 'none';
+    ColorPaletteCellElement cell = new Element.tag('color-palette-cell');
+    cell.color = e.value;
+    cell.selected = e.checked;
+    cell.title = e.title;
+    e.parent.insertBefore(cell, e);
+
+    e.onChange.listen((_) => cell.selected = e.checked);
+    cell.onSelectedChange.listen((_) => e.checked = cell.selected);
+  }
+
+  void _initCells() => cells.forEach(_initCell);
+
+  void _initCell(ColorPaletteCellElement cell) {
+    cell.onSelectedChange.listen((event) {
+      var target = event.element;
+      if (!target.selected) return;
+
+      ColorPaletteCellElement oldSelectedCell;
+      _selectedCells.where((e) => e != target).forEach((e){
+        oldSelectedCell = e;
+        e.selected = false;
       });
+      notifyPropertyChange(#selectedCell, oldSelectedCell, target);
+
+      String oldColor =
+          (oldSelectedCell == null) ? null : oldSelectedCell.color;
+      notifyPropertyChange(#color, oldColor, target.color);
+    });
+  }
+
+  void _initEvents() {
+    changes.listen((records) {
+      records
+        .where((r) => (r is PropertyChangeRecord) && (r.name == #selectedCell))
+        .forEach((r) =>
+            _colorChangeController.add(new ColorChangeEvent(r.oldValue, r.newValue)));
     });
   }
 }
@@ -47,6 +91,5 @@ class ColorChangeEvent {
   String get newColor => newCell.color;
   ColorChangeEvent(this.oldCell, this.newCell);
   @override
-  String toString() =>
-      'ColorChangeEvent(${oldColor} => ${newColor})';
+  String toString() => 'ColorChangeEvent(${oldColor} => ${newColor})';
 }

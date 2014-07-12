@@ -27,17 +27,17 @@
         </tr>
         <tr>
           <td><color-palette-cell color="yellow"></color-palette-cell></td>
-          <td><color-palette-cell color="cyan"></color-palette-cell></td>
-          <td><color-palette-cell color="magenta"></color-palette-cell></td>
+          <td><color-palette-cell color="#0ff"></color-palette-cell></td>
+          <td><color-palette-cell color="#f0f" title="magenta"></color-palette-cell></td>
         </tr>
         <tr>
-          <td><color-palette-cell color="white"></color-palette-cell></td>
-          <td><color-palette-cell color="gray"></color-palette-cell></td>
-          <td><color-palette-cell color="black"></color-palette-cell></td>
+          <td><input value="white"></td>
+          <td><input value="#888"></td>
+          <td><input value="#000" title="black"></td>
         </tr>
       </table>
+      <input type="text" id="color-display" disabled>
     </color-palette>
-    <input type="text" id="color-display">
 
     <script type="application/dart">
       import 'package:polymer/polymer.dart';
@@ -49,8 +49,10 @@
 
         ColorPaletteElement palette = document.querySelector('color-palette');
         TextInputElement input = document.querySelector('#color-display');
+
         palette.onColorChange.listen((event) {
-          input.value = event.newColor;
+          var c = palette.selectedCell;
+          input.value = '${c.title} (${c.color})';
           print(event);
         });
       }
