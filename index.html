@@ -293,17 +293,31 @@ html /deep/ [segment], html /deep/ segment {
 </script>
 
 
-<polymer-element name="color-palette-cell" attributes="color selected">
+<polymer-element name="color-palette-cell" attributes="color selected checkMark">
   <template>
     <style>
       :host {
         display: inline-block;
-        text-align: center;
-        width: 32px;
-        height: 32px;
+        width: 42px;
+        height: 42px;
+        box-sizing: border-box;
+        cursor: pointer;
+
+        color: #343;
+        text-stroke: 1px #ded;
+        -webkit-text-stroke: 1px #ded;
+        -moz-text-stroke: 1px #dfd;
+        -ms-text-stroke: 1px #dfd;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        font-family: mono;
+        font-weight: bolder;
+        font-size: 26px;
+        line-height: 1.3em;
       }
       .cell-border {
-        display: block;
         box-sizing: border-box;
         border: 1px solid rgba(128, 128, 128, 0.2);
         border-radius: 4px;
@@ -311,29 +325,48 @@ html /deep/ [segment], html /deep/ segment {
         width: 100%;
         height: 100%;
       }
-      .cell-border:hover {
-        padding: 1px 5px 5px 1px;
-      }
-      .cell-border[selected] {
-        padding: 0px;
-        border: 1px solid rgba(0, 0, 0, 0.6);
-      }
       .cell-body {
         box-sizing: border-box;
         padding: 3px;
         border-radius: 3px;
         width: 100%;
         height: 100%;
+        vertical-align: middle;
+        text-align: center;
+        box-shadow: none;
+      }
+      .cell-border:hover {
+        padding: 1px 5px 5px 1px;
+      }
+      .cell-border:active {
+        padding: 4px 2px 2px 4px;
       }
       .cell-border:hover > .cell-body {
-        box-shadow: 1px 1px 2px rgba(64,64,64,0.7);
+        box-shadow: 1px 1px 3px rgba(64,64,64,0.7);
+      }
+      .cell-border:active > .cell-body {
+        box-shadow: -1px -1px 1px rgba(64,64,64,0.7);
+      }
+      .cell-border[selected] {
+        padding: 0px;
+        border: 1px solid rgba(0, 0, 0, 0.6);
+        cursor: default;
       }
       .cell-border[selected]:hover > .cell-body {
         box-shadow: none;
       }
+      .checkMark {
+        visibility: hidden;
+      }
+      [selected] .checkMark {
+        visibility: visible;
+      }
     </style>
-    <div class="cell-border" title="{{color}}" selected?="{{selected}}">
-      <div class="cell-body" style="background-color: {{color}}">
+    <div class="cell-border" title="{{title}}" selected?="{{selected}}">
+      <div class="cell-body" style="background-color: {{color}};">
+        <span class="checkMark">
+          {{checkMark}}
+        </span>
       </div>
     </div>
   </template>
@@ -367,17 +400,17 @@ html /deep/ [segment], html /deep/ segment {
         </tr>
         <tr>
           <td><color-palette-cell color="yellow"></color-palette-cell></td>
-          <td><color-palette-cell color="cyan"></color-palette-cell></td>
-          <td><color-palette-cell color="magenta"></color-palette-cell></td>
+          <td><color-palette-cell color="#0ff"></color-palette-cell></td>
+          <td><color-palette-cell color="#f0f" title="magenta"></color-palette-cell></td>
         </tr>
         <tr>
-          <td><color-palette-cell color="white"></color-palette-cell></td>
-          <td><color-palette-cell color="gray"></color-palette-cell></td>
-          <td><color-palette-cell color="black"></color-palette-cell></td>
+          <td><input value="white"></td>
+          <td><input value="#888"></td>
+          <td><input value="#000" title="black"></td>
         </tr>
       </tbody></table>
+      <input type="text" id="color-display" disabled="">
     </color-palette>
-    <input type="text" id="color-display">
 
     
 
