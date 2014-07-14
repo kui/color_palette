@@ -5,11 +5,15 @@ import 'dart:async';
 
 @CustomTag('color-palette-cell')
 class ColorPaletteCellElement extends PolymerElement {
+
   @published
-  String color = "";
+  String color = '';
 
   @published
   bool selected = false;
+
+  @published
+  String checkMark = '✓';
 
   @reflectable
   String get title =>
@@ -17,8 +21,9 @@ class ColorPaletteCellElement extends PolymerElement {
 
   @reflectable
   void set title(String t) {
-    notifyPropertyChange(#title, title, t);
+    var oldTitle = title;
     super.title = t;
+    notifyPropertyChange(#title, oldTitle, t);
   }
 
   StreamController<ColorPaletteCellChangeEvent> _changeEventsController =
