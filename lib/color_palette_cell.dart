@@ -31,12 +31,18 @@ class ColorPaletteCellElement extends PolymerElement {
   Stream<ColorPaletteCellChangeEvent> get onSelectedChange =>
       _changeEventsController.stream;
 
-  ColorPaletteCellElement.created() : super.created() {
-    onClick.listen((_) => selected = true);
+  ColorPaletteCellElement.created() : super.created();
+
+  @override
+  attached() {
+    super.attached();
+    notifyPropertyChange(#title, null, title);
     onPropertyChange(this, #selected, () => _changeEventsController.add(
         new ColorPaletteCellChangeEvent(this)));
-    notifyPropertyChange(#title, null, title);
   }
+
+  /// on-click callback
+  select() => selected = true;
 }
 
 class ColorPaletteCellChangeEvent {

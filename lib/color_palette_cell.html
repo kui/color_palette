@@ -68,7 +68,7 @@
         visibility: visible;
       }
     </style>
-    <div class="cell-border" title="{{title}}" selected?="{{selected}}">
+    <div on-click="{{select}}" class="cell-border" title="{{title}}" selected?="{{selected}}">
       <div class="cell-body" style="background-color: {{color}};">
         <span class="checkMark">
           {{checkMark}}

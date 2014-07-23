@@ -13,7 +13,7 @@ class ColorPaletteElement extends PolymerElement {
   Stream<ColorChangeEvent> get onColorChange => _colorChangeController.stream;
 
   List<ColorPaletteCellElement> get cells =>
-      querySelectorAll('color-palette-cell');
+      this.querySelectorAll('color-palette-cell');
 
   @reflectable
   ColorPaletteCellElement get selectedCell =>
@@ -29,14 +29,18 @@ class ColorPaletteElement extends PolymerElement {
       cells.where((ColorPaletteCellElement e) => e.selected)
         .toList(growable: false);
 
-  ColorPaletteElement.created() : super.created() {
+  ColorPaletteElement.created() : super.created();
+
+  @override
+  attached() {
+    super.attached();
     _initInputElements();
     _initCells();
     _initEvents();
   }
 
   void _initInputElements() =>
-    querySelectorAll('input').forEach(_initInputElement);
+    this.querySelectorAll('input').forEach(_initInputElement);
 
   void _initInputElement(InputElement e) {
     var attrs = e.attributes;
