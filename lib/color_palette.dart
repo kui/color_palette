@@ -8,6 +8,10 @@ import 'dart:async';
 @CustomTag('color-palette')
 class ColorPaletteElement extends PolymerElement {
 
+  MutationObserver _cellObserver;
+
+  final Map<RadioButtonInputElement, ColorPaletteCellElement> _radioToPalleteCell = new Map();
+
   final StreamController<ColorChangeEvent> _colorChangeController =
       new StreamController.broadcast();
   Stream<ColorChangeEvent> get onColorChange => _colorChangeController.stream;
@@ -29,23 +33,59 @@ class ColorPaletteElement extends PolymerElement {
       cells.where((ColorPaletteCellElement e) => e.selected)
         .toList(growable: false);
 
-  ColorPaletteElement.created() : super.created();
+  ColorPaletteElement.created() : super.created() {
+    _initEvents();
+  }
 
   @override
   attached() {
     super.attached();
-    _initInputElements();
+    _initInputs();
     _initCells();
-    _initEvents();
+    _startCellObserver();
   }
 
-  void _initInputElements() =>
-    this.querySelectorAll('input').forEach(_initInputElement);
+  @override
+  detached() {
+    super.detached();
+    _cellObserver.disconnect();
+  }
 
-  void _initInputElement(InputElement e) {
+  void _startCellObserver() {
+    if (_cellObserver == null) {
+      _cellObserver = new MutationObserver(_onAddCells);
+    }
+
+    _cellObserver.observe(this, subtree: true, childList: true);
+  }
+
+  void _onAddCells(List<MutationRecord> recs, _) {
+    var addedNodes = recs
+      .expand((r) => r.addedNodes)
+      .where((n) => n is Element)
+      .toList(growable: false);
+
+    // DO NOT swap init-cells and init-inputs.
+    // Because init-inputs add cells, if init-inputs was first,
+    // the added cells will be initialize twice.
+    addedNodes
+      .expand((Element e) => (e is ColorPaletteCellElement) ? [e] :
+        e.querySelectorAll('color-palette-cell'))
+      .forEach(_initCell);
+    addedNodes
+      .expand((Element e) => (e is InputElement) ? [e] :
+        e.querySelectorAll('input'))
+      .forEach(_initInput);
+  }
+
+  void _initInputs() =>
+    this.querySelectorAll('input').forEach(_initInput);
+
+  void _initInput(InputElement e) {
     var attrs = e.attributes;
     if (!attrs.containsKey('type') || attrs['type'].isEmpty) e.type = 'radio';
     if (e.type != 'radio') return;
+    if (_radioToPalleteCell.containsKey(e)) return;
 
     e.style.display = 'none';
     ColorPaletteCellElement cell = new Element.tag('color-palette-cell');
@@ -56,6 +96,8 @@ class ColorPaletteElement extends PolymerElement {
 
     e.onChange.listen((_) => cell.selected = e.checked);
     cell.onSelectedChange.listen((_) => e.checked = cell.selected);
+
+    _radioToPalleteCell.putIfAbsent(e, () => cell);
   }
 
   void _initCells() => cells.forEach(_initCell);
