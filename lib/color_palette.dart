@@ -21,11 +21,12 @@ class ColorPaletteElement extends PolymerElement {
 
   @reflectable
   ColorPaletteCellElement get selectedCell =>
-      cells.firstWhere((ColorPaletteCellElement e) => e.selected);
+      cells.firstWhere((ColorPaletteCellElement e) => e.selected,
+        orElse: () => null);
 
   @reflectable
   String get color {
-    var c = selectedCell;
+    final c = selectedCell;
     return (c == null) ? null : c.color;
   }
 
@@ -60,7 +61,7 @@ class ColorPaletteElement extends PolymerElement {
   }
 
   void _onAddCells(List<MutationRecord> recs, _) {
-    var addedNodes = recs
+    final addedNodes = recs
       .expand((r) => r.addedNodes)
       .where((n) => n is Element)
       .toList(growable: false);
@@ -82,7 +83,7 @@ class ColorPaletteElement extends PolymerElement {
     this.querySelectorAll('input').forEach(_initInput);
 
   void _initInput(InputElement e) {
-    var attrs = e.attributes;
+    final attrs = e.attributes;
     if (!attrs.containsKey('type') || attrs['type'].isEmpty) e.type = 'radio';
     if (e.type != 'radio') return;
     if (_radioToPalleteCell.containsKey(e)) return;
@@ -104,7 +105,7 @@ class ColorPaletteElement extends PolymerElement {
 
   void _initCell(ColorPaletteCellElement cell) {
     cell.onSelectedChange.listen((event) {
-      var target = event.element;
+      final target = event.element;
       if (!target.selected) return;
 
       // find and de-select the old selected cell
@@ -116,25 +117,26 @@ class ColorPaletteElement extends PolymerElement {
 
       notifyPropertyChange(#selectedCell, oldSelectedCell, target);
     });
+
+    notifyPropertyChange(#selectedCell, null, selectedCell);
   }
 
   void _initEvents() {
-    changes.listen((records) {
-      records
-        .where((r) => (r is PropertyChangeRecord) && (r.name == #selectedCell))
-        .forEach((PropertyChangeRecord r) {
-          String oldColor = (r.oldValue == null) ? null : r.oldValue.color;
-          String newColor = (r.newValue == null) ? null : r.newValue.color;
-          notifyPropertyChange(#color, oldColor, newColor);
-          _colorChangeController.add(new ColorChangeEvent(r.oldValue, r.newValue));
-        });
-    });
+    changes
+      .expand((r) => r)
+      .where((r) => (r is PropertyChangeRecord) && (r.name == #selectedCell))
+      .forEach((PropertyChangeRecord r) {
+        String oldColor = (r.oldValue == null) ? null : r.oldValue.color;
+        String newColor = (r.newValue == null) ? null : r.newValue.color;
+        notifyPropertyChange(#color, oldColor, newColor);
+        _colorChangeController.add(new ColorChangeEvent(r.oldValue, r.newValue));
+      });
   }
 }
 
 class ColorChangeEvent {
-  ColorPaletteCellElement oldCell;
-  ColorPaletteCellElement newCell;
+  final ColorPaletteCellElement oldCell;
+  final ColorPaletteCellElement newCell;
   String get oldColor => (oldCell == null) ? null : oldCell.color;
   String get newColor => (newCell == null) ? null : newCell.color;
   ColorChangeEvent(this.oldCell, this.newCell);
