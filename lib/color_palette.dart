@@ -24,6 +24,8 @@ class ColorPaletteElement extends PolymerElement {
       cells.firstWhere((ColorPaletteCellElement e) => e.selected,
         orElse: () => null);
 
+  set selectedCell(cell) => select(cell);
+
   @reflectable
   String get color {
     final c = selectedCell;
@@ -34,7 +36,10 @@ class ColorPaletteElement extends PolymerElement {
       cells.where((ColorPaletteCellElement e) => e.selected)
         .toList(growable: false);
 
-  ColorPaletteElement.created() : super.created() {
+  ColorPaletteElement.created() : super.created();
+
+  @override
+  ready() {
     _initEvents();
   }
 
@@ -50,6 +55,11 @@ class ColorPaletteElement extends PolymerElement {
   detached() {
     super.detached();
     _cellObserver.disconnect();
+  }
+
+  void select(ColorPaletteCellElement cell) {
+    if (!contains(cell)) throw new ArgumentError('Expected to be a descendant cell');
+    cell.select();
   }
 
   void _startCellObserver() {
