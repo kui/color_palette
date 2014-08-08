@@ -1,7 +1,7 @@
 name: color_palette
-version: 0.2.1-dev
-description: A custom element to pick colors
+version: 0.2.1
 author: Keiichiro Ui <keiichiro.ui@gmail.com>
+description: A Polymer.dart custom element to pick colors
 homepage: https://github.com/kui/color_palette
 dependencies:
   polymer: '>=0.11.0 <0.12.0'
