@@ -38,6 +38,7 @@
       </table>
       <input type="text" id="color-display" disabled>
     </color-palette>
+    <button id="clear-color">clear selection</button>
 
     <script type="application/dart">
       import 'package:polymer/polymer.dart';
@@ -45,15 +46,18 @@
       import 'dart:html';
 
       main() {
-        initPolymer();
+        initPolymer().run(() {
+          ColorPaletteElement palette = querySelector('color-palette');
+          TextInputElement input = querySelector('#color-display');
 
-        ColorPaletteElement palette = document.querySelector('color-palette');
-        TextInputElement input = document.querySelector('#color-display');
-
-        palette.onColorChange.listen((event) {
-          var c = palette.selectedCell;
-          input.value = '${c.title} (${c.color})';
-          print(event);
+          palette.onColorChange.listen((event) {
+            var c = palette.selectedCell;
+            input.value = c == null ? 'null' : '${c.title} (${c.color})';
+            print(event);
+          });
+          querySelector('#clear-color').onClick.listen((e) {
+            palette.selectedCell = null;
+          });
         });
       }
     </script>

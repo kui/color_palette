@@ -19,35 +19,28 @@ class ColorPaletteElement extends PolymerElement {
   List<ColorPaletteCellElement> get cells =>
       this.querySelectorAll('color-palette-cell');
 
-  @reflectable
+  @published
   ColorPaletteCellElement get selectedCell =>
-      cells.firstWhere((ColorPaletteCellElement e) => e.selected,
-        orElse: () => null);
+      readValue(#selectedCell, () => null);
+  set selectedCell(ColorPaletteCellElement cell) =>
+      writeValue(#selectedCell, cell);
 
-  set selectedCell(ColorPaletteCellElement cell) => select(cell);
-
-  @reflectable
   String get color {
     final c = selectedCell;
     return (c == null) ? null : c.color;
   }
 
-  List<ColorPaletteCellElement> get _selectedCells =>
-      cells.where((ColorPaletteCellElement e) => e.selected)
-        .toList(growable: false);
-
   ColorPaletteElement.created() : super.created();
 
   @override
   ready() {
-    _initEvents();
+    _initInputs();
+    _initCells();
   }
 
   @override
   attached() {
     super.attached();
-    _initInputs();
-    _initCells();
     _startCellObserver();
   }
 
@@ -57,15 +50,12 @@ class ColorPaletteElement extends PolymerElement {
     _cellObserver.disconnect();
   }
 
-  void select(ColorPaletteCellElement cell) {
-    if (cell == null) {
+  void _select(ColorPaletteCellElement cell) {
+    if (cell == null || !contains(cell)) {
       cells.forEach((ColorPaletteCellElement e) => e.selected = false);
-      return;
+    } else {
+      cell.select();
     }
-    if (!contains(cell)) {
-      throw new ArgumentError('Expected to be a descendant cell');
-    }
-    cell.select();
   }
 
   void _startCellObserver() {
@@ -82,16 +72,16 @@ class ColorPaletteElement extends PolymerElement {
       .where((n) => n is Element)
       .toList(growable: false);
 
-    // DO NOT swap init-cells and init-inputs.
-    // Because init-inputs add cells, if init-inputs was first,
+    // DO NOT swap initCells and initInputs.
+    // Because initInputs add cells, if initInputs was first,
     // the added cells will be initialize twice.
     addedNodes
-      .expand((Element e) => (e is ColorPaletteCellElement) ? [e] :
-        e.querySelectorAll('color-palette-cell'))
+      .expand((Element e) => (e is ColorPaletteCellElement) ?
+              [e] : e.querySelectorAll('color-palette-cell'))
       .forEach(_initCell);
     addedNodes
-      .expand((Element e) => (e is InputElement) ? [e] :
-        e.querySelectorAll('input'))
+      .expand((Element e) =>
+          (e is InputElement) ? [e] : e.querySelectorAll('input'))
       .forEach(_initInput);
   }
 
@@ -106,9 +96,10 @@ class ColorPaletteElement extends PolymerElement {
 
     e.style.display = 'none';
     ColorPaletteCellElement cell = new Element.tag('color-palette-cell');
-    cell.color = e.value;
-    cell.selected = e.checked;
-    cell.title = e.title;
+    cell
+        ..color = e.value
+        ..selected = e.checked
+        ..title = e.title;
     e.parent.insertBefore(cell, e);
 
     e.onChange.listen((_) => cell.selected = e.checked);
@@ -117,36 +108,26 @@ class ColorPaletteElement extends PolymerElement {
     _radioToPalleteCell.putIfAbsent(e, () => cell);
   }
 
-  void _initCells() => cells.forEach(_initCell);
+  void _initCells() {
+    cells.forEach(_initCell);
+  }
 
   void _initCell(ColorPaletteCellElement cell) {
     cell.onSelectedChange.listen((event) {
       final target = event.element;
-      if (!target.selected) return;
-
-      // find and de-select the old selected cell
-      ColorPaletteCellElement oldSelectedCell;
-      _selectedCells.where((e) => e != target).forEach((e){
-        oldSelectedCell = e;
-        e.selected = false;
-      });
-
-      notifyPropertyChange(#selectedCell, oldSelectedCell, target);
+      if (target.selected) {
+        selectedCell = target;
+      }
     });
-
-    notifyPropertyChange(#selectedCell, null, selectedCell);
   }
 
-  void _initEvents() {
-    changes
-      .expand((r) => r)
-      .where((r) => (r is PropertyChangeRecord) && (r.name == #selectedCell))
-      .forEach((PropertyChangeRecord r) {
-        String oldColor = (r.oldValue == null) ? null : r.oldValue.color;
-        String newColor = (r.newValue == null) ? null : r.newValue.color;
-        notifyPropertyChange(#color, oldColor, newColor);
-        _colorChangeController.add(new ColorChangeEvent(r.oldValue, r.newValue));
-      });
+  selectedCellChanged(ColorPaletteCellElement oldSelectedCell) {
+    selectedCell.selected = true;
+    cells
+      .where((e) => e != selectedCell)
+      .where((e) => e.selected)
+      .forEach((e) => e.selected = false);
+    _colorChangeController.add(new ColorChangeEvent(oldSelectedCell, selectedCell));
   }
 }
 
