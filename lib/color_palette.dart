@@ -24,7 +24,7 @@ class ColorPaletteElement extends PolymerElement {
       cells.firstWhere((ColorPaletteCellElement e) => e.selected,
         orElse: () => null);
 
-  set selectedCell(cell) => select(cell);
+  set selectedCell(ColorPaletteCellElement cell) => select(cell);
 
   @reflectable
   String get color {
@@ -58,7 +58,13 @@ class ColorPaletteElement extends PolymerElement {
   }
 
   void select(ColorPaletteCellElement cell) {
-    if (!contains(cell)) throw new ArgumentError('Expected to be a descendant cell');
+    if (cell == null) {
+      cells.forEach((ColorPaletteCellElement e) => e.selected = false);
+      return;
+    }
+    if (!contains(cell)) {
+      throw new ArgumentError('Expected to be a descendant cell');
+    }
     cell.select();
   }
 
