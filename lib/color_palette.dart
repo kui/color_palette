@@ -122,7 +122,9 @@ class ColorPaletteElement extends PolymerElement {
   }
 
   selectedCellChanged(ColorPaletteCellElement oldSelectedCell) {
-    selectedCell.selected = true;
+    if (selectedCell != null) {
+      selectedCell.selected = true;
+    }
     cells
       .where((e) => e != selectedCell)
       .where((e) => e.selected)
