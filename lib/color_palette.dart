@@ -107,7 +107,6 @@ class ColorPaletteElement extends PolymerElement {
   void _initCells() => cells.forEach(_initCell);
 
   void _initCell(ColorPaletteCellElement cell) {
-    print('palette: ${cell.color}');
     cell.onSelectedChange
       .map((e) => e.element)
       .where((ColorPaletteCellElement e) => e.selected)
