@@ -33,14 +33,10 @@ class ColorPaletteElement extends PolymerElement {
   ColorPaletteElement.created() : super.created();
 
   @override
-  ready() {
+  domReady() {
+    super.attached();
     _initInputs();
     _initCells();
-  }
-
-  @override
-  attached() {
-    super.attached();
     _startCellObserver();
   }
 
@@ -108,17 +104,14 @@ class ColorPaletteElement extends PolymerElement {
     _radioToPalleteCell.putIfAbsent(e, () => cell);
   }
 
-  void _initCells() {
-    cells.forEach(_initCell);
-  }
+  void _initCells() => cells.forEach(_initCell);
 
   void _initCell(ColorPaletteCellElement cell) {
-    cell.onSelectedChange.listen((event) {
-      final target = event.element;
-      if (target.selected) {
-        selectedCell = target;
-      }
-    });
+    print('palette: ${cell.color}');
+    cell.onSelectedChange
+      .map((e) => e.element)
+      .where((ColorPaletteCellElement e) => e.selected)
+      .listen((ColorPaletteCellElement e) => selectedCell = e);
   }
 
   selectedCellChanged(ColorPaletteCellElement oldSelectedCell) {

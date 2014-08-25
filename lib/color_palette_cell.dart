@@ -36,8 +36,8 @@ class ColorPaletteCellElement extends PolymerElement {
   ColorPaletteCellElement.created() : super.created();
 
   @override
-  attached() {
-    super.attached();
+  domReady() {
+    super.domReady();
     notifyPropertyChange(#title, null, title);
   }
 
