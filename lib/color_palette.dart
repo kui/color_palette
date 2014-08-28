@@ -33,17 +33,25 @@ class ColorPaletteElement extends PolymerElement {
   ColorPaletteElement.created() : super.created();
 
   @override
-  domReady() {
+  attached() {
     super.attached();
-    _initInputs();
-    _initCells();
     _startCellObserver();
+  }
+
+  @override
+  domReady() {
+    super.domReady();
+    _initCells();
+    _initInputs();
   }
 
   @override
   detached() {
     super.detached();
-    _cellObserver.disconnect();
+    if (_cellObserver != null) {
+      _cellObserver.disconnect();
+      _cellObserver = null;
+    }
   }
 
   void _select(ColorPaletteCellElement cell) {
@@ -55,11 +63,10 @@ class ColorPaletteElement extends PolymerElement {
   }
 
   void _startCellObserver() {
-    if (_cellObserver == null) {
-      _cellObserver = new MutationObserver(_onAddCells);
-    }
+    if (_cellObserver != null) return;
 
-    _cellObserver.observe(this, subtree: true, childList: true);
+    _cellObserver = new MutationObserver(_onAddCells)
+        ..observe(this, subtree: true, childList: true);
   }
 
   void _onAddCells(List<MutationRecord> recs, _) {
@@ -104,7 +111,10 @@ class ColorPaletteElement extends PolymerElement {
     _radioToPalleteCell.putIfAbsent(e, () => cell);
   }
 
-  void _initCells() => cells.forEach(_initCell);
+  void _initCells() {
+    cells.forEach(_initCell);
+    selectedCell = cells.firstWhere((e) => e.selected, orElse: () => null);
+  }
 
   void _initCell(ColorPaletteCellElement cell) {
     cell.onSelectedChange
