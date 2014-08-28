@@ -4,7 +4,7 @@ author: Keiichiro Ui <keiichiro.ui@gmail.com>
 description: A Polymer.dart custom element to pick colors
 homepage: https://github.com/kui/color_palette
 dependencies:
-  polymer: '>=0.12.0 <0.13.0'
+  polymer: '>=0.13.0 <0.14.0'
 dev_dependencies:
   ghpages_generator: '>=0.2.0 <0.3.0'
   path: '>=1.2.0 <1.3.0'
