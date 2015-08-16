@@ -1,4 +1,5 @@
-library color_pallette.color_pallete_cell;
+@HtmlImport('color_palette_cell.html')
+library color_palette.cell;
 
 import 'package:polymer/polymer.dart';
 import 'dart:async';

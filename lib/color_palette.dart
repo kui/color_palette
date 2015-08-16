@@ -1,4 +1,5 @@
-library color_pallette.color_pallete;
+@HtmlImport('color_palette.html')
+library color_palette;
 
 import 'package:polymer/polymer.dart';
 import 'color_palette_cell.dart';
@@ -20,10 +21,8 @@ class ColorPaletteElement extends PolymerElement {
       this.querySelectorAll('color-palette-cell');
 
   @published
-  ColorPaletteCellElement get selectedCell =>
-      readValue(#selectedCell, () => null);
-  set selectedCell(ColorPaletteCellElement cell) =>
-      writeValue(#selectedCell, cell);
+  ColorPaletteCellElement get selectedCell => readValue(#selectedCell, () => null);
+  set selectedCell(ColorPaletteCellElement cell) => writeValue(#selectedCell, cell);
 
   String get color {
     final c = selectedCell;
