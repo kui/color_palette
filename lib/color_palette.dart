@@ -18,7 +18,7 @@ class ColorPaletteElement extends PolymerElement {
   Stream<ColorChangeEvent> get onColorChange => _colorChangeController.stream;
 
   List<ColorPaletteCellElement> get cells =>
-      this.querySelectorAll('color-palette-cell') as List<ColorPaletteCellElement>;
+      this.querySelectorAll('color-palette-cell').where((e) => e is ColorPaletteCellElement);
 
   @published
   ColorPaletteCellElement get selectedCell => readValue(#selectedCell, () => null);
